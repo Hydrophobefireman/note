@@ -1,7 +1,7 @@
 import { CodeIcon } from "@/components/Icons/Code";
 import { DocumentIcon } from "@/components/Icons/Document";
 import { center } from "@/styles";
-import { AnimateLayout, createSnapshot } from "@hydrophobefireman/ui-anim";
+
 import { loadURL } from "@hydrophobefireman/ui-lib";
 import {
   actionButtonContainer,
@@ -28,38 +28,22 @@ export default function Landing() {
       </div>
 
       <div class={actionButtonContainer}>
-        <AnimateLayout
+        <button
           class={landingNoteButton}
-          element="button"
-          animId="html"
-          initialSnapshot={createSnapshot({
-            height: 0,
-            width: 0,
-            originX: "0%",
-            originY: "0%",
-          })}
           data-to="/new/html"
           onClick={handleClick}
         >
           <CodeIcon size="4rem" />
           <span>HTML Note</span>
-        </AnimateLayout>
-        <AnimateLayout
+        </button>
+        <button
           class={landingNoteButton}
-          element="button"
-          animId="text"
-          initialSnapshot={createSnapshot({
-            height: 0,
-            width: 0,
-            originX: "0%",
-            originY: "0%",
-          })}
           data-to="/new/text"
           onClick={handleClick}
         >
           <DocumentIcon size="4rem" />
           <span>Plain text Note</span>
-        </AnimateLayout>
+        </button>
       </div>
 
       <div class={answersContainer}>

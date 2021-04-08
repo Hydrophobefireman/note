@@ -20,6 +20,8 @@ export const landingNoteButton = css({
   borderRadius: "10px",
   border: "2px solid var(--accent)",
   willChange: "transform",
+  animation: " buttonAnim 0.3s ease",
+  animationFillMode: "forwards",
   pseudo: {
     ":hover": {
       boxShadow: "var(--box-shadow)",

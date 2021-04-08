@@ -54,3 +54,11 @@ textarea {
   to {
   }
 }
+
+@keyframes buttonAnim {
+  from {
+    transform: scale(0.1);
+  }
+  to {
+  }
+}

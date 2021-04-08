@@ -1,6 +1,5 @@
 import { useFocus } from "@/customHooks";
 import { center, textArea } from "@/styles";
-import { AnimateLayout } from "@hydrophobefireman/ui-anim";
 import { useState } from "@hydrophobefireman/ui-lib";
 import { generateButton, messageCss } from "./NewNote.styles";
 import { EditorProps } from "./types";
@@ -26,7 +25,7 @@ export function Editor({ message, type, next }: EditorProps) {
   const [value, setValue] = useState(defaultValues[type]);
   const ref = useFocus<HTMLTextAreaElement>();
   return (
-    <AnimateLayout element="section" animId={type}>
+    <div>
       <div class={messageCss}>{message}</div>
       <div class={center}>
         <textarea
@@ -50,7 +49,7 @@ export function Editor({ message, type, next }: EditorProps) {
           Generate
         </button>
       </div>
-    </AnimateLayout>
+    </div>
   );
 }
 
