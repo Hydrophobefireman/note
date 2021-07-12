@@ -3,8 +3,8 @@ const TerserWebpackPlugin = require("terser-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const autoPrefixPlugin = require("autoprefixer");
-const HTMLInlineCSSWebpackPlugin = require("html-inline-css-webpack-plugin")
-  .default;
+const HTMLInlineCSSWebpackPlugin =
+  require("html-inline-css-webpack-plugin").default;
 const WebpackModuleNoModulePlugin = require("@hydrophobefireman/module-nomodule");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const { autoPrefixCSS } = require("catom/dist/css");
@@ -161,4 +161,4 @@ function getCfg(isLegacy) {
   };
 }
 
-module.exports = isProd ? [getCfg(false), getCfg(true)] : getCfg(false);
+module.exports = getCfg(false);
