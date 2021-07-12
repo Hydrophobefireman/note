@@ -25,7 +25,7 @@ export const landingNoteButton = css({
   pseudo: {
     ":hover": {
       boxShadow: "var(--box-shadow)",
-      transform: "scale(1.05)  translateY(-10px) !important",
+      // transform: "scale(1.05)  translateY(-10px) !important",
     },
   },
 });
