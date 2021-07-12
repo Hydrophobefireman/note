@@ -3,11 +3,11 @@ import {
   base64ToArrayBuffer,
 } from "@hydrophobefireman/j-utils";
 import {
-  useState,
   Router,
-  useEffect,
   RouterSubscription,
+  useEffect,
   useRef,
+  useState,
 } from "@hydrophobefireman/ui-lib";
 
 function useMount(fn: () => unknown | (() => void)) {
@@ -110,7 +110,7 @@ export function useUnGzip(hash: string, toString?: boolean) {
   const pako = usePako();
   const [text, setText] = useState<string>(null);
   useEffect(() => {
-    if (!pako || !hash) return;
+    if (!pako || !hash || hash.startsWith("init")) return;
     (async () => {
       const uint8 = new Uint8Array(await base64ToArrayBuffer(hash));
       if (!toString) {

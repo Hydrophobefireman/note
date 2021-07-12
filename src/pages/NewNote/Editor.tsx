@@ -1,6 +1,7 @@
 import { useFocus } from "@/customHooks";
 import { center, textArea } from "@/styles";
 import { useState } from "@hydrophobefireman/ui-lib";
+
 import { generateButton, messageCss } from "./NewNote.styles";
 import { EditorProps } from "./types";
 
@@ -17,12 +18,21 @@ const defaultValues = {
 </html>
     `.trim(),
   text: `
-    Hello World\n:)
+    Hello, World!
     `.trim(),
 };
 
+function getValFromHash() {
+  const hash = location.hash.substr(1);
+  if (!hash) return;
+  const params = new URLSearchParams(hash);
+  return params.get("init");
+}
+
 export function Editor({ message, type, next }: EditorProps) {
-  const [value, setValue] = useState(defaultValues[type]);
+  const [value, setValue] = useState(
+    () => getValFromHash() || defaultValues[type]
+  );
   const ref = useFocus<HTMLTextAreaElement>();
   return (
     <div>
