@@ -1,7 +1,15 @@
-import { EditButton } from "@/components/EditButton/EditButton";
-import { iframeCss } from "@/components/Viewers/viewers.style";
-import { useMemo } from "@hydrophobefireman/ui-lib";
-export function ViewHtml({ ungzipped }: { ungzipped: string }) {
+import {EditButton} from "@/components/EditButton/EditButton";
+import {iframeCss} from "@/components/Viewers/viewers.style";
+import {base64ToArrayBuffer} from "@hydrophobefireman/j-utils";
+import {useEffect, useState} from "@hydrophobefireman/ui-lib";
+
+const decoder = new TextDecoder();
+export function ViewHtml({ungzipped}: {ungzipped: string}) {
+  const [bin, setBin] = useState<string>(null);
+  useEffect(async () => {
+    const ab = await base64ToArrayBuffer(ungzipped);
+    setBin(decoder.decode(ab));
+  }, [ungzipped]);
   return (
     <>
       <iframe
@@ -9,10 +17,7 @@ export function ViewHtml({ ungzipped }: { ungzipped: string }) {
         sandbox="allow-scripts allow-forms allow-top-navigation allow-popups allow-modals allow-popups-to-escape-sandbox"
         src={`data:text/html;base64,${ungzipped}`}
       />
-      <EditButton
-        type="html"
-        text={useMemo(() => window.atob(ungzipped), [ungzipped])}
-      />
+      {bin && <EditButton type="html" text={bin} />}
     </>
   );
 }
