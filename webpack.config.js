@@ -126,7 +126,7 @@ function getCfg(isLegacy) {
         [
           new TerserWebpackPlugin({parallel: true}),
           new CssMinimizerPlugin({
-            minify: CssMinimizerPlugin.parcelCssMinify,
+            minify: CssMinimizerPlugin.lightningCssMinify,
             parallel: Math.floor(require("os").cpus()?.length / 2) || 1,
           }),
         ],
