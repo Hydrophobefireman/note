@@ -68,6 +68,7 @@ export function MonacoLoader({
         height: "75vh",
         width: "80vw",
         margin: "auto",
+        textTransform: "none",
         pseudo: {
           " .overflow-guard, .monaco-editor": {borderRadius: "10px"},
         },
