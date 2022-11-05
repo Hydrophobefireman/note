@@ -1,9 +1,13 @@
-import { useFocus } from "@/customHooks";
-import { center, textArea } from "@/styles";
-import { useState } from "@hydrophobefireman/ui-lib";
+import {css} from "catom";
 
-import { generateButton, messageCss } from "./NewNote.styles";
-import { EditorProps } from "./types";
+import {Monaco} from "@/components/Monaco";
+import {useFocus} from "@/customHooks";
+import {center, textArea} from "@/styles";
+import {Switch, useSwitch} from "@hydrophobefireman/kit/input";
+import {useState} from "@hydrophobefireman/ui-lib";
+
+import {generateButton, messageCss} from "./NewNote.styles";
+import {EditorProps} from "./types";
 
 const defaultValues = {
   html: `
@@ -29,25 +33,44 @@ function getValFromHash() {
   return params.get("init");
 }
 
-export function Editor({ message, type, next }: EditorProps) {
+export function Editor({message, type, next}: EditorProps) {
   const [value, setValue] = useState(
     () => getValFromHash() || defaultValues[type]
   );
   const ref = useFocus<HTMLTextAreaElement>();
+  const {currentState, toggle} = useSwitch("enabled");
+  const useMonaco = currentState === "enabled";
   return (
     <div>
       <div class={messageCss}>{message}</div>
+      <div
+        class={[
+          center,
+          css({marginTop: "1.2rem", marginBottom: "1.2rem", gap: ".5rem"}),
+        ]}
+      >
+        <Switch label="Use Monaco" state={currentState} onInput={toggle} />
+        <div>Use monaco</div>
+      </div>
       <div class={center}>
-        <textarea
-          class={textArea}
-          value={value}
-          onInput={(e) => {
-            setValue(e.currentTarget.value);
-            preloadPako();
-          }}
-          spellcheck={type === "text"}
-          ref={ref}
-        />
+        {useMonaco ? (
+          <div class={css({width: "100%", height: "75vh"})}>
+            <Monaco value={value} setValue={setValue} />
+          </div>
+        ) : (
+          <>
+            <textarea
+              class={textArea}
+              value={value}
+              onInput={(e) => {
+                setValue(e.currentTarget.value);
+                preloadPako();
+              }}
+              spellcheck={type === "text"}
+              ref={ref}
+            />
+          </>
+        )}
       </div>
       <div class={center}>
         <button

@@ -2,19 +2,23 @@ const path = require("path");
 const TerserWebpackPlugin = require("terser-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const autoPrefixPlugin = require("autoprefixer");
 const HTMLInlineCSSWebpackPlugin =
   require("html-inline-css-webpack-plugin").default;
 const WebpackModuleNoModulePlugin = require("@hydrophobefireman/module-nomodule");
-const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-const { autoPrefixCSS } = require("catom/dist/css");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const {autoPrefixCSS} = require("catom/dist/css");
 const babel = require("./.babelconfig");
 const uiConfig = require("./ui.config.json");
+const {browserslistToTargets, transform} = require("lightningcss");
+const browserslist = require("browserslist");
 const mode = process.env.NODE_ENV;
 const isProd = mode === "production";
+const {outputDir, staticFilePrefix, inlineCSS, enableCatom, fonts} = uiConfig;
+const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 
-const { outputDir, staticFilePrefix, inlineCSS, enableCatom } = uiConfig;
-
+const browserslistConfig = browserslistToTargets(
+  browserslist("last 2 versions")
+);
 function prodOrDev(a, b) {
   return isProd ? a : b;
 }
@@ -34,24 +38,34 @@ const jsLoaderOptions = (isLegacy) => ({
 const cssLoaderOptions = {
   test: /\.css$/,
   use: [
-    { loader: MiniCssExtractPlugin.loader },
+    {loader: MiniCssExtractPlugin.loader},
     {
       loader: "css-loader",
-    },
-    {
-      loader: "postcss-loader",
-      options: {
-        postcssOptions: { plugins: [autoPrefixPlugin()] },
-      },
     },
   ],
 };
 const contentLoaderOptions = {
   test: /\.(png|jpg|gif|ico|svg)$/,
   use: uiConfig.preferBase64Images
-    ? [{ loader: "url-loader", options: { fallback: "file-loader" } }]
-    : [{ loader: "file-loader" }],
+    ? [{loader: "url-loader", options: {fallback: "file-loader"}}]
+    : [{loader: "file-loader"}],
 };
+/**
+ *
+ * @param {string} css
+ */
+function parcelHandleCss(css) {
+  const {code} = transform({
+    code: Buffer.from(css),
+    filename: "1.css",
+    drafts: {customMedia: true, nesting: true},
+    minify: true,
+    targets: browserslistConfig,
+    sourceMap: false,
+  });
+
+  return Promise.resolve({css: code.toString()});
+}
 
 function getEnvObject(isLegacy) {
   const prod = !isLegacy;
@@ -64,10 +78,13 @@ function getEnvObject(isLegacy) {
     module: prod,
   };
 }
+/**
+ * @returns  {import("webpack").Configuration}
+ */
 function getCfg(isLegacy) {
   return {
     cache: enableCatom
-      ? { type: "memory" }
+      ? {type: "memory"}
       : {
           type: "filesystem",
           buildDependencies: {
@@ -75,7 +92,9 @@ function getCfg(isLegacy) {
           },
         },
     devServer: {
-      contentBase: `${__dirname}/${outputDir}`,
+      static: {
+        directory: path.join(__dirname, uiConfig.staticDir),
+      },
       compress: true,
       port: 4200,
       historyApiFallback: true,
@@ -87,8 +106,9 @@ function getCfg(isLegacy) {
         contentLoaderOptions,
       ],
     },
-    entry: `${__dirname}/src/App.tsx`,
+    entry: path.join(__dirname, "/src/App.tsx"),
     output: {
+      publicPath: "/",
       environment: getEnvObject(isLegacy),
       path: `${__dirname}/${outputDir}/`,
       filename: `${staticFilePrefix}/${
@@ -97,12 +117,21 @@ function getCfg(isLegacy) {
     },
     resolve: {
       extensions: [".ts", ".tsx", ".js", ".json"],
-      alias: { "@": srcPath("src") },
+      alias: {"@": srcPath("src"), "@kit": "@hydrophobefireman/kit"},
     },
     mode,
     optimization: {
       concatenateModules: false,
-      minimizer: prodOrDev([new TerserWebpackPlugin({ parallel: true })], []),
+      minimizer: prodOrDev(
+        [
+          new TerserWebpackPlugin({parallel: true}),
+          new CssMinimizerPlugin({
+            minify: CssMinimizerPlugin.parcelCssMinify,
+            parallel: Math.floor(require("os").cpus()?.length / 2) || 1,
+          }),
+        ],
+        []
+      ),
       splitChunks: {
         chunks: "all",
       },
@@ -110,6 +139,7 @@ function getCfg(isLegacy) {
       realContentHash: false,
     },
     plugins: [
+      new MonacoWebpackPlugin({}),
       new HtmlWebpackPlugin({
         templateParameters: async function templateParametersGenerator(
           compilation,
@@ -152,13 +182,16 @@ function getCfg(isLegacy) {
           !1
         ),
       }),
-      new MiniCssExtractPlugin({ filename: `${staticFilePrefix}/main.css` }),
-      isProd &&
-        new OptimizeCSSAssetsPlugin({ cssProcessor: require("cssnano")() }),
+      new MiniCssExtractPlugin({
+        filename: `${staticFilePrefix}/main-[contenthash].css`,
+      }),
       isProd && inlineCSS && new HTMLInlineCSSWebpackPlugin({}),
-      new WebpackModuleNoModulePlugin(isLegacy ? "legacy" : "modern"),
+      new WebpackModuleNoModulePlugin({
+        mode: isLegacy ? "legacy" : "modern",
+        fonts,
+      }),
     ].filter(Boolean),
   };
 }
 
-module.exports = getCfg(false);
+module.exports = isProd ? [getCfg(false), getCfg(true)] : getCfg(false);

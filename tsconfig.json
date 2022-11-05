@@ -8,8 +8,20 @@
     "target": "ESNext",
     "rootDir": "./",
     "baseUrl": ".",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
     "jsx": "preserve",
-    "paths": { "@/*": ["./src/*"] }
+    "paths": {
+      "@/*": ["./src/*"],
+      "@kit": ["./node_modules/@hydrophobefireman/kit"],
+      "@kit/*": ["./node_modules/@hydrophobefireman/kit/*"]
+    }
   },
-  "exclude": [".babelconfig.js", "webpack.config.js", "./scripts/"]
+  "exclude": [
+    ".babelconfig.js",
+    "webpack.config.js",
+    "./scripts/",
+    "build/",
+    "build_static/"
+  ]
 }

@@ -1,10 +1,17 @@
+import "@hydrophobefireman/kit/styles";
+
 // javascript is supported
 import "./App.css";
 
-import { VNode, render } from "@hydrophobefireman/ui-lib";
-import { RouteLoader } from "./components/RouteLoader";
-import { Header } from "./components/Header/Header";
-import { Motion } from "@hydrophobefireman/ui-anim";
+import {Motion} from "@hydrophobefireman/ui-anim";
+import {VNode, render} from "@hydrophobefireman/ui-lib";
+
+import {Header} from "./components/Header/Header";
+import {RouteLoader} from "./components/RouteLoader";
+// import "@hydrophobefireman/kit/css-reset";
+
+
+
 
 function App(): VNode {
   return (

@@ -3,5 +3,7 @@
   "inlineCSS": true,
   "preferBase64Images": true,
   "outputDir": "build",
-  "staticFilePrefix": "_static/ui"
+  "staticDir": "build_static",
+  "staticFilePrefix": "_ui",
+  "fonts": [{ "href": "https://fonts.hpfm.dev/poppins.css" }]
 }
