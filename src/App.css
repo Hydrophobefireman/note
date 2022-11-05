@@ -14,12 +14,9 @@ html {
   background-color: var(--bg);
   color: var(--font);
 }
-* {
-  text-transform: lowercase;
-}
 
 button {
-  text-transform: lowercase;
+  /* text-transform: lowercase; */
   cursor: pointer;
   background: none;
   border: none;
